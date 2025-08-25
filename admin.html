@@ -15,72 +15,55 @@
   <table>
     <thead>
       <tr>
-        <th>Full Name</th><th>Age</th><th>Gender</th>
+        <th>#</th><th>Full Name</th><th>Age</th><th>Gender</th>
         <th>Height</th><th>Weight</th><th>Phone</th><th>Email</th>
         <th>City</th><th>Activity</th><th>Goal</th>
-        <th>Medical</th><th>Mode</th><th>Action</th>
+        <th>Medical</th><th>Mode</th><th>Time</th><th>Action</th>
       </tr>
     </thead>
     <tbody id="clientList"></tbody>
   </table>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
-
   <script>
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBZdql8NXJY6UC_woZ29xsmRMkEwJEfFgA",
-      authDomain: "clientfitness-72ba6.firebaseapp.com",
-      projectId: "clientfitness-72ba6",
-      storageBucket: "clientfitness-72ba6.appspot.com",
-      messagingSenderId: "216102391726",
-      appId: "1:216102391726:web:82cb38573249386537c23f",
-      measurementId: "G-SMYYPGF01E"
-    };
+    const webAppUrl = "https://script.google.com/macros/s/AKfycbziyVs-cZz-JOvA-4foQBm5A2xgRLFmpJleX7nZwgSl_Jy6pNirssTJ0f1nWaFPohOb/exec";
 
-    // Init
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    function loadClients() {
+    async function loadClients() {
+      const res = await fetch(webAppUrl + "?action=read");
+      const data = await res.json();
       const tbody = document.getElementById("clientList");
+      tbody.innerHTML = "";
 
-      db.collection("registrations").orderBy("time", "desc")
-        .onSnapshot(snapshot => {
-          tbody.innerHTML = "";
-          snapshot.forEach(doc => {
-            const c = doc.data();
-            const row = `<tr>
-              <td>${c.fullname}</td>
-              <td>${c.age}</td>
-              <td>${c.gender}</td>
-              <td>${c.height}</td>
-              <td>${c.weight}</td>
-              <td>${c.phone}</td>
-              <td>${c.email}</td>
-              <td>${c.city}</td>
-              <td>${c.activity}</td>
-              <td>${c.goal}</td>
-              <td>${c.medical}</td>
-              <td>${c.mode}</td>
-              <td><button class="delete-btn" onclick="deleteClient('${doc.id}')">Delete</button></td>
-            </tr>`;
-            tbody.innerHTML += row;
-          });
-        });
+      data.forEach((c, index) => {
+        const row = `<tr>
+          <td>${index + 2}</td>
+          <td>${c.fullname}</td>
+          <td>${c.age}</td>
+          <td>${c.gender}</td>
+          <td>${c.height}</td>
+          <td>${c.weight}</td>
+          <td>${c.phone}</td>
+          <td>${c.email}</td>
+          <td>${c.city}</td>
+          <td>${c.activity}</td>
+          <td>${c.goal}</td>
+          <td>${c.medical}</td>
+          <td>${c.mode}</td>
+          <td>${c.time}</td>
+          <td><button class="delete-btn" onclick="deleteClient(${index + 2})">Delete</button></td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
     }
 
-    async function deleteClient(id) {
+    async function deleteClient(row) {
       if (confirm("Are you sure you want to delete this client?")) {
-        await db.collection("registrations").doc(id).delete();
-        alert("✅ Client deleted!");
+        await fetch(webAppUrl + "?action=delete&row=" + row);
+        loadClients();
       }
     }
 
-    // Load data when admin.html opens
-    loadClients();
+    // Load data on page open
+    window.onload = loadClients;
   </script>
 </body>
 </html>
