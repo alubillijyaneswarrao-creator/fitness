@@ -7,76 +7,44 @@
 <body>
   <h2>Register Here</h2>
   <form id="registrationForm">
-    <label>Full Name: <input type="text" id="fullname" required></label><br>
-    <label>Age: <input type="number" id="age" required></label><br>
+    <label>Full Name: <input type="text" name="fullname" required></label><br>
+    <label>Age: <input type="number" name="age" required></label><br>
     <label>Gender: 
-      <select id="gender" required>
+      <select name="gender" required>
         <option value="">Select</option>
         <option>Male</option>
         <option>Female</option>
       </select>
     </label><br>
-    <label>Height: <input type="text" id="height"></label><br>
-    <label>Weight: <input type="text" id="weight"></label><br>
-    <label>Email: <input type="email" id="email" required></label><br>
-    <label>Phone: <input type="text" id="phone" required></label><br>
-    <label>City: <input type="text" id="city"></label><br>
-    <label>Activity: <input type="text" id="activity"></label><br>
-    <label>Goal: <input type="text" id="goal"></label><br>
-    <label>Medical: <input type="text" id="medical"></label><br>
-    <label>Mode: <input type="text" id="mode"></label><br>
+    <label>Height: <input type="text" name="height"></label><br>
+    <label>Weight: <input type="text" name="weight"></label><br>
+    <label>Email: <input type="email" name="email" required></label><br>
+    <label>Phone: <input type="text" name="phone" required></label><br>
+    <label>City: <input type="text" name="city"></label><br>
+    <label>Activity: <input type="text" name="activity"></label><br>
+    <label>Goal: <input type="text" name="goal"></label><br>
+    <label>Medical: <input type="text" name="medical"></label><br>
+    <label>Mode: <input type="text" name="mode"></label><br>
     <button type="submit">Submit</button>
   </form>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
-
   <script>
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBZdql8NXJY6UC_woZ29xsmRMkEwJEfFgA",
-      authDomain: "clientfitness-72ba6.firebaseapp.com",
-      projectId: "clientfitness-72ba6",
-      storageBucket: "clientfitness-72ba6.appspot.com",
-      messagingSenderId: "216102391726",
-      appId: "1:216102391726:web:82cb38573249386537c23f",
-      measurementId: "G-SMYYPGF01E"
-    };
+    const scriptURL = "https://script.google.com/macros/s/AKfycbziyVs-cZz-JOvA-4foQBm5A2xgRLFmpJleX7nZwgSl_Jy6pNirssTJ0f1nWaFPohOb/exec";
 
-    // Init
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    // Form submit
-    const form = document.getElementById("registrationForm");
-    form.addEventListener("submit", async function(e) {
+    document.getElementById("registrationForm").addEventListener("submit", e => {
       e.preventDefault();
+      const formData = new FormData(e.target);
 
-      const client = {
-        fullname: document.getElementById("fullname").value,
-        age: document.getElementById("age").value,
-        gender: document.getElementById("gender").value,
-        height: document.getElementById("height").value,
-        weight: document.getElementById("weight").value,
-        email: document.getElementById("email").value,
-        phone: document.getElementById("phone").value,
-        city: document.getElementById("city").value,
-        activity: document.getElementById("activity").value,
-        goal: document.getElementById("goal").value,
-        medical: document.getElementById("medical").value,
-        mode: document.getElementById("mode").value,
-        time: new Date()
-      };
-
-      try {
-        await db.collection("registrations").add(client);
-        alert("✅ Registration Successful!");
-        form.reset();
-      } catch (err) {
-        console.error("Error: ", err);
-        alert("❌ Error saving data. Try again.");
-      }
+      fetch(scriptURL, { method: "POST", body: formData })
+        .then(res => res.text())
+        .then(msg => {
+          alert("✅ Registration Successful!");
+          e.target.reset();
+        })
+        .catch(err => {
+          console.error("Error:", err);
+          alert("❌ Failed to submit, try again.");
+        });
     });
   </script>
 </body>
