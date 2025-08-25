@@ -2,174 +2,84 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Siddharth RAW’s Fitness Club</title>
+  <title>Admin Panel</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
-
-    body {
-      font-family: 'Roboto', sans-serif;
-      margin: 0;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #1a1a1a, #2b0000);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-      color: #fff;
-    }
-
-    h2.logo {
-      text-align: center;
-      font-size: 28px;
-      font-weight: 700;
-      color: #ff0000;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      text-shadow: 0 0 10px #ff0000, 0 0 20px #990000;
-      margin-bottom: 25px;
-      transition: 0.3s;
-    }
-
-    h2.logo span {
-      color: #fff;
-      font-size: 30px;
-      font-weight: 900;
-      text-shadow: 0 0 8px #fff, 0 0 15px #ff4d4d;
-    }
-
-    h2.logo:hover {
-      text-shadow: 0 0 15px #ff0000, 0 0 25px #990000, 0 0 35px #ff4d4d;
-      transform: scale(1.05);
-    }
-
-    table {
-      width: 100%;
-      max-width: 1200px;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: #1a1a1a;
-      box-shadow: 0 0 20px rgba(255,0,0,0.5);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    th, td {
-      border: 1px solid #ff0000;
-      padding: 12px;
-      text-align: center;
-      font-size: 14px;
-      color: #fff;
-    }
-
-    th {
-      background: #ff0000;
-      color: #fff;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    tr:nth-child(even) {
-      background: #2b0000;
-    }
-
-    tr:hover {
-      background: #ff000033;
-      transform: scale(1.01);
-      transition: 0.2s;
-    }
-
-    button.delete-btn {
-      background: #e74c3c;
-      color: #fff;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    button.delete-btn:hover {
-      background: #c0392b;
-      box-shadow: 0 0 10px #ff0000;
-      transform: translateY(-2px);
-    }
-
-    @media (max-width: 768px) {
-      table, th, td {
-        font-size: 12px;
-        padding: 8px;
-      }
-    }
-
-    @media (max-width: 500px) {
-      table {
-        font-size: 11px;
-      }
-
-      th, td {
-        padding: 6px;
-      }
-
-      button.delete-btn {
-        padding: 4px 8px;
-        font-size: 12px;
-      }
-    }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
+    th { background: #f2f2f2; }
+    .delete-btn { background: red; color: white; border: none; padding: 5px 10px; cursor: pointer; }
   </style>
 </head>
 <body>
-  <h2 class="logo"><span>Siddharth RAW’s Fitness Club</span></h2>
-
+  <h2>Registered Clients</h2>
   <table>
     <thead>
       <tr>
-        <th>Name</th><th>Age</th><th>Gender</th><th>Height</th><th>Weight</th>
-        <th>Contact</th><th>Email</th><th>City</th><th>Activity Level</th>
-        <th>Fitness Goal</th><th>Medical Conditions</th>
-        <th>Training Mode</th><th>Action</th>
+        <th>Full Name</th><th>Age</th><th>Gender</th>
+        <th>Height</th><th>Weight</th><th>Phone</th><th>Email</th>
+        <th>City</th><th>Activity</th><th>Goal</th>
+        <th>Medical</th><th>Mode</th><th>Action</th>
       </tr>
     </thead>
     <tbody id="clientList"></tbody>
   </table>
 
-  <script>
-    function loadClients() {
-      const clients = JSON.parse(localStorage.getItem("clients")) || [];
-      const tbody = document.getElementById("clientList");
-      tbody.innerHTML = "";
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
 
-      clients.forEach((c, index) => {
-        const row = `<tr>
-          <td>${c.fullname || c.name}</td>
-          <td>${c.age}</td>
-          <td>${c.gender}</td>
-          <td>${c.height}</td>
-          <td>${c.weight}</td>
-          <td>${c.phone || c.contact}</td>
-          <td>${c.email}</td>
-          <td>${c.city}</td>
-          <td>${c.activity}</td>
-          <td>${c.goal || c.goals}</td>
-          <td>${c.medical}</td>
-          <td>${c.mode || c.training}</td>
-          <td><button class="delete-btn" onclick="deleteClient(${index})">Delete</button></td>
-        </tr>`;
-        tbody.innerHTML += row;
-      });
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBZdql8NXJY6UC_woZ29xsmRMkEwJEfFgA",
+      authDomain: "clientfitness-72ba6.firebaseapp.com",
+      projectId: "clientfitness-72ba6",
+      storageBucket: "clientfitness-72ba6.appspot.com",
+      messagingSenderId: "216102391726",
+      appId: "1:216102391726:web:82cb38573249386537c23f",
+      measurementId: "G-SMYYPGF01E"
+    };
+
+    // Init
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function loadClients() {
+      const tbody = document.getElementById("clientList");
+
+      db.collection("registrations").orderBy("time", "desc")
+        .onSnapshot(snapshot => {
+          tbody.innerHTML = "";
+          snapshot.forEach(doc => {
+            const c = doc.data();
+            const row = `<tr>
+              <td>${c.fullname}</td>
+              <td>${c.age}</td>
+              <td>${c.gender}</td>
+              <td>${c.height}</td>
+              <td>${c.weight}</td>
+              <td>${c.phone}</td>
+              <td>${c.email}</td>
+              <td>${c.city}</td>
+              <td>${c.activity}</td>
+              <td>${c.goal}</td>
+              <td>${c.medical}</td>
+              <td>${c.mode}</td>
+              <td><button class="delete-btn" onclick="deleteClient('${doc.id}')">Delete</button></td>
+            </tr>`;
+            tbody.innerHTML += row;
+          });
+        });
     }
 
-    function deleteClient(index) {
-      let clients = JSON.parse(localStorage.getItem("clients")) || [];
-      if(confirm("Are you sure you want to delete this client?")) {
-        clients.splice(index, 1); // Remove the client
-        localStorage.setItem("clients", JSON.stringify(clients));
-        loadClients(); // Refresh table
+    async function deleteClient(id) {
+      if (confirm("Are you sure you want to delete this client?")) {
+        await db.collection("registrations").doc(id).delete();
+        alert("✅ Client deleted!");
       }
     }
 
-    // Load clients on page load
+    // Load data when admin.html opens
     loadClients();
   </script>
 </body>
